@@ -1,6 +1,6 @@
 import path from "node:path";
 
-import { PrismaClient } from "@prisma/client";
+import { Prisma, PrismaClient } from "@prisma/client";
 
 const globalForPrisma = globalThis as {
   prisma?: PrismaClient;
@@ -24,14 +24,22 @@ function resolveDatabaseUrl() {
 
 export const prisma =
   globalForPrisma.prisma ??
-  new PrismaClient({
-    datasources: {
-      db: {
-        url: resolveDatabaseUrl(),
-      },
-    },
-    log: process.env.NODE_ENV === "development" ? ["warn", "error"] : ["error"],
-  });
+  (() => {
+    const databaseUrl = resolveDatabaseUrl();
+    const options: Prisma.PrismaClientOptions = {
+      log: process.env.NODE_ENV === "development" ? ["warn", "error"] : ["error"],
+    };
+
+    if (databaseUrl) {
+      options.datasources = {
+        db: {
+          url: databaseUrl,
+        },
+      };
+    }
+
+    return new PrismaClient(options);
+  })();
 
 if (process.env.NODE_ENV !== "production") {
   globalForPrisma.prisma = prisma;
