@@ -1,26 +1,245 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --bg: #f8fafc;
+  --surface: #ffffff;
+  --glass: rgba(255, 255, 255, 0.6);
+  --glass-strong: rgba(255, 255, 255, 0.78);
+  --text: #0f172a;
+  --text-muted: #64748b;
+  --border: rgba(15, 23, 42, 0.06);
+  --primary: #4f46e5;
+  --primary-soft: #eef2ff;
+  --green: #22c55e;
+  --green-soft: #dcfce7;
+  --blue: #3b82f6;
+  --blue-soft: #dbeafe;
+  --purple: #8b5cf6;
+  --purple-soft: #ede9fe;
+  --orange: #f97316;
+  --orange-soft: #ffedd5;
+  --shadow-soft: 0 16px 40px rgba(15, 23, 42, 0.06);
+  --shadow-lift: 0 20px 48px rgba(15, 23, 42, 0.1);
+  --bg-gradient-start: #eef2ff;
+  --bg-gradient-end: #f8fafc;
+}
+
+[data-theme="dark"] {
+  --bg: #020617;
+  --surface: #0f172a;
+  --glass: rgba(15, 23, 42, 0.74);
+  --glass-strong: rgba(15, 23, 42, 0.88);
+  --text: #f3f7ff;
+  --text-muted: #c0cbdd;
+  --border: rgba(148, 163, 184, 0.2);
+  --primary: #7c73ff;
+  --primary-soft: rgba(79, 70, 229, 0.18);
+  --green-soft: rgba(34, 197, 94, 0.18);
+  --blue-soft: rgba(59, 130, 246, 0.18);
+  --purple-soft: rgba(139, 92, 246, 0.18);
+  --orange-soft: rgba(249, 115, 22, 0.18);
+  --shadow-soft: 0 18px 42px rgba(2, 6, 23, 0.34);
+  --shadow-lift: 0 24px 52px rgba(2, 6, 23, 0.42);
+  --bg-gradient-start: #111827;
+  --bg-gradient-end: #020617;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-background: var(--bg);
+  --color-foreground: var(--text);
+  --font-sans: "Geist Sans", "Inter", "Avenir Next", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  --font-mono: "SFMono-Regular", "Menlo", "Monaco", monospace;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  color-scheme: light;
+}
+
+html.dark,
+[data-theme="dark"] {
+  color-scheme: dark;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: linear-gradient(180deg, var(--bg-gradient-start) 0%, var(--bg-gradient-end) 40%);
+  color: var(--text);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  font-feature-settings: "liga" 1, "kern" 1;
+  transition: background-color 220ms ease, color 220ms ease;
+}
+
+.app-background {
+  background:
+    radial-gradient(circle at top, rgba(255, 255, 255, 0.75), transparent 34%),
+    linear-gradient(180deg, var(--bg-gradient-start) 0%, var(--bg-gradient-end) 40%);
+  transition: background-color 220ms ease, color 220ms ease, background 220ms ease;
+}
+
+[data-theme="dark"] .app-background {
+  background:
+    radial-gradient(circle at top, rgba(124, 115, 255, 0.18), transparent 32%),
+    linear-gradient(180deg, var(--bg-gradient-start) 0%, var(--bg-gradient-end) 46%);
+}
+
+.logo-light,
+.logo-dark {
+  transition: opacity 220ms ease;
+}
+
+html.dark .logo-light,
+[data-theme="dark"] .logo-light {
+  display: none;
+}
+
+html.dark .logo-dark,
+[data-theme="dark"] .logo-dark {
+  display: inline-flex !important;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+::selection {
+  background: rgba(79, 70, 229, 0.18);
+}
+
+@layer components {
+  .glass-card {
+    background: var(--glass);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow-soft);
+  }
+
+  .glass-card-strong {
+    background: var(--glass-strong);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow-soft);
+  }
+
+  .hover-lift {
+    transition:
+      transform 180ms ease,
+      box-shadow 180ms ease,
+      border-color 180ms ease,
+      background-color 180ms ease;
+  }
+
+  .hover-lift:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lift);
+  }
+
+  .pill-button {
+    border-radius: 9999px;
+    transition:
+      transform 180ms ease,
+      box-shadow 180ms ease,
+      opacity 180ms ease,
+      background-color 180ms ease,
+      border-color 180ms ease,
+      color 180ms ease;
+  }
+
+  .pill-button:hover {
+    transform: translateY(-1px);
+  }
+
+  .button-primary {
+    background: var(--primary);
+    color: white;
+    box-shadow: 0 14px 34px rgba(79, 70, 229, 0.18);
+  }
+
+  .button-primary:hover {
+    opacity: 0.94;
+    box-shadow: 0 18px 40px rgba(79, 70, 229, 0.22);
+  }
+
+  .button-secondary {
+    background: rgba(255, 255, 255, 0.8);
+    color: var(--text);
+    border: 1px solid var(--border);
+    box-shadow: 0 10px 24px rgba(15, 23, 42, 0.05);
+  }
+
+  [data-theme="dark"] .button-secondary {
+    background: rgba(30, 41, 59, 0.9);
+    color: var(--text);
+    border-color: rgba(148, 163, 184, 0.24);
+    box-shadow: 0 16px 36px rgba(2, 6, 23, 0.32);
+  }
+
+  [data-theme="dark"] .button-secondary:hover {
+    background: rgba(51, 65, 85, 0.96);
+    border-color: rgba(124, 115, 255, 0.32);
+  }
+}
+
+[data-theme="dark"] .text-slate-950,
+[data-theme="dark"] .text-slate-900,
+[data-theme="dark"] .text-slate-800 {
+  color: #f3f7ff !important;
+}
+
+[data-theme="dark"] .text-slate-700,
+[data-theme="dark"] .text-slate-600 {
+  color: #c0cbdd !important;
+}
+
+[data-theme="dark"] .text-slate-500,
+[data-theme="dark"] .text-slate-400 {
+  color: #9fb0c8 !important;
+}
+
+[data-theme="dark"] .bg-white\/80,
+[data-theme="dark"] .bg-white\/75,
+[data-theme="dark"] .bg-white\/72,
+[data-theme="dark"] .bg-white\/70,
+[data-theme="dark"] .bg-white\/55 {
+  background-color: rgba(15, 23, 42, 0.9) !important;
+}
+
+[data-theme="dark"] .border-white\/80,
+[data-theme="dark"] .border-white\/70,
+[data-theme="dark"] .border-white\/60 {
+  border-color: rgba(148, 163, 184, 0.14) !important;
+}
+
+[data-theme="dark"] .hover\:bg-white:hover,
+[data-theme="dark"] .hover\:bg-white\/75:hover {
+  background-color: rgba(30, 41, 59, 0.96) !important;
+}
+
+[data-theme="dark"] .bg-slate-950,
+[data-theme="dark"] .bg-slate-900 {
+  background-color: #7c73ff !important;
+}
+
+[data-theme="dark"] .hover\:bg-slate-900:hover {
+  background-color: #6d63f7 !important;
+}
+
+[data-theme="dark"] .disabled\:bg-slate-400:disabled {
+  background-color: rgba(100, 116, 139, 0.5) !important;
 }

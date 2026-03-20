@@ -1,0 +1,114 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  admin
+  editor
+}
+
+model Client {
+  id             String           @id @default(cuid())
+  name           String
+  segment        String
+  notes          String?
+  brandContext   String?
+  aiGuidelines   String?
+  isActive       Boolean          @default(true)
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+  weeklyAnalyses WeeklyAnalysis[]
+  userClients    UserClient[]
+}
+
+model User {
+  id           String       @id @default(cuid())
+  name         String
+  email        String       @unique
+  passwordHash String
+  role         UserRole
+  mustChangePassword Boolean @default(true)
+  createdAt    DateTime     @default(now())
+  userClients  UserClient[]
+}
+
+model UserClient {
+  userId   String
+  clientId String
+  client   Client   @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([userId, clientId])
+  @@index([clientId])
+}
+
+model WeeklyAnalysis {
+  id              String           @id @default(cuid())
+  clientId        String
+  date            DateTime
+  insights        String
+  objective       String
+  metricsSummary  Json?
+  metricsInsights Json?
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  client          Client           @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  metrics         PostMetrics[]
+  generatedTopics GeneratedTopic[]
+  aiUsages        AiUsage[]
+
+  @@index([clientId, date])
+}
+
+model PostMetrics {
+  id         String         @id @default(cuid())
+  analysisId String
+  date       DateTime
+  format     String
+  theme      String
+  reach      Int
+  likes      Int
+  comments   Int
+  saves      Int
+  shares     Int
+  createdAt  DateTime       @default(now())
+  analysis   WeeklyAnalysis @relation(fields: [analysisId], references: [id], onDelete: Cascade)
+
+  @@index([analysisId, date])
+}
+
+model GeneratedTopic {
+  id          String         @id @default(cuid())
+  analysisId  String
+  title       String
+  format      String
+  objective   String
+  description String
+  caption     String
+  headline    String?
+  subheadline String?
+  visualScript Json?
+  visualIdea  String
+  cta         String
+  createdAt   DateTime       @default(now())
+  analysis    WeeklyAnalysis @relation(fields: [analysisId], references: [id], onDelete: Cascade)
+
+  @@index([analysisId, createdAt])
+}
+
+model AiUsage {
+  id         String         @id @default(cuid())
+  analysisId String
+  model      String
+  tokensUsed Int?
+  createdAt  DateTime       @default(now())
+  analysis   WeeklyAnalysis @relation(fields: [analysisId], references: [id], onDelete: Cascade)
+
+  @@index([analysisId, createdAt])
+  @@index([createdAt])
+}

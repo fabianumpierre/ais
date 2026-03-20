@@ -1,0 +1,1 @@
+ALTER TABLE "GeneratedTopic" ADD COLUMN "caption" TEXT NOT NULL DEFAULT '';
